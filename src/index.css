@@ -1,0 +1,186 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-[#08070e] text-slate-100 font-sans antialiased;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124, 58, 237, 0.15), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(59, 130, 246, 0.08), transparent);
+  }
+}
+
+@layer components {
+  /* Glass card */
+  .glass {
+    @apply rounded-2xl border border-white/[0.06] bg-white/[0.04] backdrop-blur-xl;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-violet-400 via-purple-400 to-blue-400 bg-clip-text text-transparent;
+  }
+
+  /* Primary button */
+  .btn-primary {
+    @apply relative overflow-hidden rounded-xl px-8 py-4 font-semibold text-white transition-all duration-300;
+    background: linear-gradient(135deg, #7c3aed, #6366f1, #3b82f6);
+    background-size: 200% 200%;
+  }
+
+  .btn-primary:hover {
+    @apply shadow-lg shadow-violet-500/30 scale-[1.02];
+    background-position: right center;
+  }
+
+  .btn-primary:active {
+    @apply scale-[0.98];
+  }
+
+  .btn-primary:disabled {
+    @apply opacity-60 cursor-not-allowed scale-100 shadow-none;
+  }
+
+  /* Input field */
+  .input-field {
+    @apply w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-3.5
+           text-slate-100 placeholder-slate-500 outline-none transition-all duration-200;
+  }
+
+  .input-field:focus {
+    @apply border-violet-500/50 bg-white/[0.06] shadow-sm shadow-violet-500/10;
+  }
+
+  /* Step badge */
+  .step-badge {
+    @apply inline-flex items-center gap-2 rounded-full border border-violet-500/20
+           bg-violet-500/10 px-3 py-1.5 text-sm font-medium text-violet-300;
+  }
+}
+
+@layer utilities {
+  /* Animated gradient border */
+  .gradient-border {
+    position: relative;
+  }
+
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.5), rgba(99, 102, 241, 0.3), rgba(59, 130, 246, 0.5));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* Scrollbar */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(124, 58, 237, 0.3) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(124, 58, 237, 0.3);
+    border-radius: 2px;
+  }
+}
+
+/* Cursor blink for streaming */
+.streaming-cursor::after {
+  content: '▋';
+  animation: cursor-blink 0.8s step-end infinite;
+  color: #a78bfa;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Prose overrides for brochure output */
+.brochure-prose {
+  @apply text-slate-300 leading-relaxed;
+}
+
+.brochure-prose h1,
+.brochure-prose h2,
+.brochure-prose h3 {
+  @apply text-slate-100 font-semibold;
+}
+
+.brochure-prose h1 { @apply text-2xl mt-0 mb-4; }
+.brochure-prose h2 { @apply text-xl mt-8 mb-3; }
+.brochure-prose h3 { @apply text-lg mt-6 mb-2; }
+
+.brochure-prose p { @apply mb-4 text-slate-300; }
+.brochure-prose ul,
+.brochure-prose ol { @apply mb-4 pl-6 space-y-1; }
+.brochure-prose li { @apply text-slate-300; }
+.brochure-prose strong { @apply text-slate-100 font-semibold; }
+.brochure-prose em { @apply text-violet-300; }
+
+.brochure-prose hr {
+  @apply border-white/[0.08] my-6;
+}
+
+/* Floating orbs background */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-30px) scale(1.05); }
+}
+
+/* Fade in up animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Spin animation for loader */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
