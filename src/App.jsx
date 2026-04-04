@@ -12,7 +12,7 @@ export default function App() {
   const [brochureContent, setBrochureContent] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [lastCompanyName, setLastCompanyName] = useState('');
-  const outputRef = useRef(null);
+  const progressRef = useRef(null);
 
   const handleGenerate = async ({ companyName, url, tone }) => {
     setStatus('generating');
@@ -21,6 +21,11 @@ export default function App() {
     setBrochureContent('');
     setErrorMessage('');
     setLastCompanyName(companyName);
+
+    // Scroll to progress section immediately on submit
+    setTimeout(() => {
+      progressRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
 
     try {
       const response = await fetch('/api/generate-brochure', {
@@ -37,7 +42,6 @@ export default function App() {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let buffer = '';
-      let chunkBuffer = '';
 
       while (true) {
         const { done, value } = await reader.read();
@@ -67,10 +71,6 @@ export default function App() {
           } else if (event.type === 'chunk') {
             chunkBuffer += event.content;
             setBrochureContent((prev) => prev + event.content);
-            // Scroll to output when first chunk arrives
-            if (chunkBuffer.length === event.content.length && outputRef.current) {
-              outputRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
           } else if (event.type === 'done') {
             setStatus('done');
             setCurrentStep(5);
@@ -167,7 +167,7 @@ export default function App() {
 
         {/* Progress + Output section */}
         {(status !== 'idle') && (
-          <section className="max-w-3xl mx-auto space-y-6" ref={outputRef}>
+          <section className="max-w-3xl mx-auto space-y-6" ref={progressRef}>
             {/* Progress */}
             {(isGenerating || status === 'done') && (
               <div className="glass p-6">
