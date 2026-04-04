@@ -4,7 +4,7 @@
 
 An AI-powered company brochure generator. Enter a company name and URL — the app scrapes the website, identifies key pages, and streams a polished brochure in seconds.
 
-![BrochureAI](https://img.shields.io/badge/Powered%20by-GPT--4.1-7c3aed?style=flat-square) ![Netlify](https://img.shields.io/badge/Deploy-Netlify-00c7b7?style=flat-square) ![React](https://img.shields.io/badge/React-18-61dafb?style=flat-square) ![Live](https://img.shields.io/badge/Live-brouchere--ai.netlify.app-brightgreen?style=flat-square)
+![BrochureAI](https://img.shields.io/badge/Powered%20by-GPT--4.1-7c3aed?style=flat-square) ![React](https://img.shields.io/badge/React-18-61dafb?style=flat-square) 
 
 ## Features
 
