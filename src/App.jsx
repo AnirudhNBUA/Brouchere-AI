@@ -69,7 +69,6 @@ export default function App() {
             setCurrentStep(event.step);
             setCurrentMessage(event.message);
           } else if (event.type === 'chunk') {
-            chunkBuffer += event.content;
             setBrochureContent((prev) => prev + event.content);
           } else if (event.type === 'done') {
             setStatus('done');
