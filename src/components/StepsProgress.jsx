@@ -40,7 +40,7 @@ export default function StepsProgress({ currentStep, currentMessage }) {
                     step.id
                   )}
                 </div>
-                <span className={`text-[10px] font-medium whitespace-nowrap ${
+                <span className={`text-[9px] sm:text-[10px] font-medium text-center leading-tight ${
                   active ? 'text-violet-300' : done ? 'text-emerald-400' : 'text-slate-600'
                 }`}>
                   {step.label}

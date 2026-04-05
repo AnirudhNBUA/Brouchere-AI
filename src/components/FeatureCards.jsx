@@ -43,7 +43,7 @@ const FEATURES = [
 
 export default function FeatureCards() {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-16">
+    <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-14">
       {FEATURES.map((f, i) => (
         <div
           key={i}

@@ -86,7 +86,7 @@ export default function GeneratorForm({ onGenerate, isGenerating }) {
               onClick={() => setTone(t.value)}
               disabled={isGenerating}
               className={`
-                relative flex flex-col items-center gap-1.5 rounded-xl border p-3 text-center
+                relative flex flex-col items-center gap-1 sm:gap-1.5 rounded-xl border p-2.5 sm:p-3 text-center
                 transition-all duration-200 cursor-pointer
                 ${tone === t.value
                   ? 'border-violet-500/50 bg-violet-500/10 shadow-sm shadow-violet-500/20'

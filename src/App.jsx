@@ -99,7 +99,7 @@ export default function App() {
   const isStreaming = isGenerating && brochureContent.length > 0;
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden">
+    <div className="relative min-h-screen overflow-x-hidden" id="print-root">
       {/* Background orbs */}
       <div
         className="orb w-[600px] h-[600px] opacity-[0.07]"
@@ -135,27 +135,27 @@ export default function App() {
       {/* Main content */}
       <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pb-24">
         {/* Hero section */}
-        <section className="text-center py-16 sm:py-24">
-          <div className="inline-flex items-center gap-2 step-badge mb-6">
+        <section className="text-center py-10 sm:py-20">
+          <div className="inline-flex items-center gap-2 step-badge mb-5">
             <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
             Powered by GPT-4.1
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-100 mb-5 leading-[1.1]">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-100 mb-4 leading-[1.1]">
             Generate stunning{' '}
             <span className="gradient-text">company brochures</span>
-            <br />
-            in seconds
+            <br className="hidden sm:block" />
+            {' '}in seconds
           </h1>
 
-          <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-12 leading-relaxed">
+          <p className="text-base sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed px-2">
             Enter any company URL and our AI will read the website, identify key pages,
             and craft a polished brochure—ready for clients, investors, and recruits.
           </p>
 
           {/* Main card */}
           <div className="max-w-lg mx-auto">
-            <div className="glass gradient-border p-7 sm:p-8 text-left shadow-2xl shadow-black/40">
+            <div className="glass gradient-border p-5 sm:p-8 text-left shadow-2xl shadow-black/40">
               <GeneratorForm onGenerate={handleGenerate} isGenerating={isGenerating} />
             </div>
           </div>

@@ -184,3 +184,74 @@
 .animate-spin-slow {
   animation: spin-slow 3s linear infinite;
 }
+
+/* ============================================================
+   PRINT / PDF STYLES
+   Only the brochure content is printed; all UI chrome is hidden.
+   ============================================================ */
+@media print {
+  /* Hide everything by default */
+  body > * {
+    display: none !important;
+  }
+
+  /* Show only our print root */
+  #print-root {
+    display: block !important;
+  }
+
+  body {
+    background: #fff !important;
+    color: #111 !important;
+    font-family: 'Inter', Georgia, serif;
+    font-size: 11pt;
+    line-height: 1.7;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Make the print header visible */
+  #print-header {
+    display: block !important;
+  }
+
+  /* Make the brochure content visible and remove the dark card chrome */
+  #brochure-print-content {
+    display: block !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  /* Reset prose colors for print */
+  .brochure-prose,
+  .brochure-prose p,
+  .brochure-prose li {
+    color: #222 !important;
+  }
+
+  .brochure-prose h1,
+  .brochure-prose h2,
+  .brochure-prose h3 {
+    color: #111 !important;
+  }
+
+  .brochure-prose h1 { font-size: 20pt; margin-bottom: 10pt; }
+  .brochure-prose h2 { font-size: 15pt; margin-top: 20pt; margin-bottom: 8pt; border-bottom: 1px solid #ddd; padding-bottom: 4pt; }
+  .brochure-prose h3 { font-size: 12pt; margin-top: 14pt; }
+
+  .brochure-prose em { color: #5b21b6 !important; }
+  .brochure-prose strong { color: #111 !important; }
+
+  .brochure-prose hr {
+    border-color: #ddd !important;
+    margin: 16pt 0 !important;
+  }
+
+  /* No page breaks inside paragraphs */
+  p, li { page-break-inside: avoid; }
+  h2, h3 { page-break-after: avoid; }
+
+  /* Hide the streaming cursor when printing */
+  .streaming-cursor::after { display: none !important; }
+}
