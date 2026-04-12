@@ -61,6 +61,56 @@
     @apply border-violet-500/50 bg-white/[0.06] shadow-sm shadow-violet-500/10;
   }
 
+  /* Company suggestions dropdown */
+  .suggestions-dropdown {
+    @apply absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-xl
+           border border-white/[0.08] bg-[#0f1324]/95 shadow-2xl shadow-black/40 backdrop-blur-xl;
+  }
+
+  .suggestions-list {
+    @apply max-h-60 overflow-y-auto p-1.5 scrollbar-thin;
+  }
+
+  .suggestions-item {
+    @apply mb-1 flex items-center gap-1 rounded-lg;
+  }
+
+  .suggestions-item:last-child {
+    @apply mb-0;
+  }
+
+  .suggestion-use-button {
+    @apply flex-1 min-w-0 rounded-lg px-3 py-2.5 text-left transition-colors;
+  }
+
+  .suggestions-item:hover .suggestion-use-button {
+    @apply bg-white/[0.06];
+  }
+
+  .suggestions-item-active .suggestion-use-button {
+    @apply bg-violet-500/15;
+  }
+
+  .suggestion-company {
+    @apply block truncate text-sm font-medium text-slate-200;
+  }
+
+  .suggestion-url {
+    @apply mt-0.5 block truncate text-xs text-slate-400;
+  }
+
+  .suggestion-open-link {
+    @apply shrink-0 rounded-md px-2.5 py-1.5 text-xs font-medium text-violet-300 transition-colors;
+  }
+
+  .suggestion-open-link:hover {
+    @apply bg-violet-500/15 text-violet-200;
+  }
+
+  .suggestions-status {
+    @apply border-t border-white/[0.06] px-3 py-2 text-xs text-slate-400;
+  }
+
   /* Step badge */
   .step-badge {
     @apply inline-flex items-center gap-2 rounded-full border border-violet-500/20

@@ -9,6 +9,7 @@ An AI-powered company brochure generator. Enter a company name and URL — the a
 ## Features
 
 - **Real-time streaming** — brochure text streams back word by word as it's generated
+- **Company website suggestions** — type a company name and get live hyperlink suggestions
 - **Smart scraping** — AI identifies and reads the most relevant pages (about, careers, products)
 - **Three tones** — Professional, Friendly, or Witty
 - **5,000-char context limit** — keeps API costs low while covering the essentials
@@ -16,6 +17,7 @@ An AI-powered company brochure generator. Enter a company name and URL — the a
 
 ## How it works
 
+0. As you type company name, the app fetches website suggestions from `/api/company-suggestions`
 1. Fetches all links from the company's homepage
 2. GPT-4.1-nano selects up to 3 relevant pages (about, careers, etc.)
 3. Scrapes text content from each page using [Cheerio](https://cheerio.js.org/)
@@ -79,6 +81,7 @@ netlify deploy --prod
 ```
 ├── netlify/
 │   └── functions/
+│       ├── company-suggestions.mjs # Serverless function: company -> website suggestions
 │       └── generate-brochure.mjs   # Serverless function: scrape + stream
 ├── src/
 │   ├── App.jsx                      # Root component, SSE state machine
@@ -99,6 +102,7 @@ netlify deploy --prod
 | Variable | Description |
 |---|---|
 | `OPENAI_API_KEY` | Your OpenAI secret key — set this in Netlify dashboard or `.env` |
+| `COMPANY_SUGGESTION_PROVIDER` | Optional provider selector: `auto` (default), `clearbit`, or `duckduckgo` |
 
 ## License
 

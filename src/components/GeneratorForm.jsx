@@ -1,4 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+const COMPANY_QUERY_MIN_LENGTH = 2;
+const COMPANY_SUGGESTION_DEBOUNCE_MS = 280;
+const COMPANY_SUGGESTIONS_LIST_ID = 'company-suggestions-list';
 
 const TONES = [
   { value: 'professional', label: 'Professional', icon: '💼', desc: 'Formal & authoritative' },
@@ -10,6 +14,144 @@ export default function GeneratorForm({ onGenerate, isGenerating }) {
   const [companyName, setCompanyName] = useState('');
   const [url, setUrl] = useState('');
   const [tone, setTone] = useState('professional');
+  const [suggestions, setSuggestions] = useState([]);
+  const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
+  const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
+
+  const companyFieldRef = useRef(null);
+  const suggestionRequestIdRef = useRef(0);
+
+  const closeSuggestions = () => {
+    setIsSuggestionsOpen(false);
+    setActiveSuggestionIndex(-1);
+  };
+
+  const selectSuggestion = (suggestion) => {
+    if (!suggestion) return;
+
+    if (suggestion.companyName) {
+      setCompanyName(suggestion.companyName);
+    }
+
+    if (suggestion.websiteUrl) {
+      setUrl(suggestion.websiteUrl);
+    }
+
+    closeSuggestions();
+  };
+
+  const handleCompanyNameKeyDown = (event) => {
+    if (!isSuggestionsOpen || suggestions.length === 0) return;
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setActiveSuggestionIndex((prev) => {
+        if (prev < 0) return 0;
+        return Math.min(prev + 1, suggestions.length - 1);
+      });
+      return;
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setActiveSuggestionIndex((prev) => {
+        if (prev < 0) return suggestions.length - 1;
+        if (prev === 0) return 0;
+        return prev - 1;
+      });
+      return;
+    }
+
+    if (event.key === 'Enter' && activeSuggestionIndex >= 0) {
+      event.preventDefault();
+      selectSuggestion(suggestions[activeSuggestionIndex]);
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeSuggestions();
+    }
+  };
+
+  useEffect(() => {
+    if (!isGenerating) return;
+
+    setSuggestions([]);
+    closeSuggestions();
+    setIsFetchingSuggestions(false);
+  }, [isGenerating]);
+
+  useEffect(() => {
+    const query = companyName.trim();
+
+    if (isGenerating || query.length < COMPANY_QUERY_MIN_LENGTH) {
+      suggestionRequestIdRef.current += 1;
+      setSuggestions([]);
+      closeSuggestions();
+      setIsFetchingSuggestions(false);
+      return;
+    }
+
+    const requestId = suggestionRequestIdRef.current + 1;
+    suggestionRequestIdRef.current = requestId;
+    const controller = new AbortController();
+
+    const timeout = setTimeout(async () => {
+      setIsFetchingSuggestions(true);
+
+      try {
+        const response = await fetch(
+          `/api/company-suggestions?query=${encodeURIComponent(query)}&limit=6`,
+          { signal: controller.signal }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Suggestion lookup failed with status ${response.status}`);
+        }
+
+        const payload = await response.json();
+        if (suggestionRequestIdRef.current !== requestId) return;
+
+        const items = Array.isArray(payload?.suggestions) ? payload.suggestions : [];
+        setSuggestions(items);
+        setIsSuggestionsOpen(items.length > 0);
+        setActiveSuggestionIndex(-1);
+      } catch {
+        if (controller.signal.aborted) return;
+        if (suggestionRequestIdRef.current !== requestId) return;
+
+        setSuggestions([]);
+        closeSuggestions();
+      } finally {
+        if (suggestionRequestIdRef.current === requestId) {
+          setIsFetchingSuggestions(false);
+        }
+      }
+    }, COMPANY_SUGGESTION_DEBOUNCE_MS);
+
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [companyName, isGenerating]);
+
+  useEffect(() => {
+    if (!isSuggestionsOpen) return;
+
+    const handleMouseDown = (event) => {
+      if (!companyFieldRef.current) return;
+      if (!companyFieldRef.current.contains(event.target)) {
+        closeSuggestions();
+      }
+    };
+
+    document.addEventListener('mousedown', handleMouseDown);
+    return () => {
+      document.removeEventListener('mousedown', handleMouseDown);
+    };
+  }, [isSuggestionsOpen]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -30,7 +172,7 @@ export default function GeneratorForm({ onGenerate, isGenerating }) {
         <label className="block text-sm font-medium text-slate-300">
           Company Name
         </label>
-        <div className="relative">
+        <div className="relative" ref={companyFieldRef}>
           <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-slate-500">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
@@ -41,11 +183,77 @@ export default function GeneratorForm({ onGenerate, isGenerating }) {
             type="text"
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
+            onFocus={() => {
+              if (suggestions.length > 0) {
+                setIsSuggestionsOpen(true);
+              }
+            }}
+            onKeyDown={handleCompanyNameKeyDown}
             placeholder="e.g. Acme Corporation"
             className="input-field pl-10"
             required
             disabled={isGenerating}
+            autoComplete="organization"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-controls={COMPANY_SUGGESTIONS_LIST_ID}
+            aria-expanded={isSuggestionsOpen}
           />
+
+          {(isSuggestionsOpen || isFetchingSuggestions) && (
+            <div className="suggestions-dropdown">
+              {isFetchingSuggestions && suggestions.length === 0 ? (
+                <div className="suggestions-status">Searching company websites...</div>
+              ) : (
+                <>
+                  <ul
+                    id={COMPANY_SUGGESTIONS_LIST_ID}
+                    role="listbox"
+                    className="suggestions-list"
+                  >
+                    {suggestions.map((suggestion, index) => {
+                      const isActive = index === activeSuggestionIndex;
+
+                      return (
+                        <li
+                          key={`${suggestion.websiteUrl}-${index}`}
+                          className={`suggestions-item ${isActive ? 'suggestions-item-active' : ''}`}
+                          role="presentation"
+                        >
+                          <button
+                            type="button"
+                            role="option"
+                            aria-selected={isActive}
+                            className="suggestion-use-button"
+                            onMouseDown={(event) => event.preventDefault()}
+                            onMouseEnter={() => setActiveSuggestionIndex(index)}
+                            onClick={() => selectSuggestion(suggestion)}
+                          >
+                            <span className="suggestion-company">{suggestion.companyName}</span>
+                            <span className="suggestion-url">{suggestion.displayUrl || suggestion.websiteUrl}</span>
+                          </button>
+                          <a
+                            href={suggestion.websiteUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="suggestion-open-link"
+                            onMouseDown={(event) => event.preventDefault()}
+                            onClick={(event) => event.stopPropagation()}
+                          >
+                            Open
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+
+                  {isFetchingSuggestions && suggestions.length > 0 && (
+                    <div className="suggestions-status">Refreshing suggestions...</div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

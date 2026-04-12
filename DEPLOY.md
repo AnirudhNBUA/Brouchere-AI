@@ -9,6 +9,7 @@
 5. Under **Site settings → Environment variables**, add:
    ```
    OPENAI_API_KEY = sk-proj-...
+   COMPANY_SUGGESTION_PROVIDER = auto
    ```
 6. Click **Deploy** — done!
 
@@ -21,6 +22,7 @@ npm install -g netlify-cli
 # 2. Copy env file
 cp .env.example .env
 # Edit .env and add your OPENAI_API_KEY
+# Optional: set COMPANY_SUGGESTION_PROVIDER=auto|clearbit|duckduckgo
 
 # 3. Run (serves both frontend + serverless functions)
 npm run netlify
@@ -31,6 +33,7 @@ npm run netlify
 
 ```
 ├── netlify/functions/
+│   ├── company-suggestions.mjs ← Serverless function (company suggestion lookup)
 │   └── generate-brochure.mjs   ← Serverless function (scraping + OpenAI streaming)
 ├── src/
 │   ├── App.jsx                  ← Main React component
