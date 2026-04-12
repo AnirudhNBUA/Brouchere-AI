@@ -21,6 +21,7 @@ export default function GeneratorForm({ onGenerate, isGenerating }) {
 
   const companyFieldRef = useRef(null);
   const suggestionRequestIdRef = useRef(0);
+  const suppressNextLookupRef = useRef(false);
 
   const closeSuggestions = () => {
     setIsSuggestionsOpen(false);
@@ -30,6 +31,9 @@ export default function GeneratorForm({ onGenerate, isGenerating }) {
   const selectSuggestion = (suggestion) => {
     if (!suggestion) return;
 
+    suppressNextLookupRef.current = true;
+    suggestionRequestIdRef.current += 1;
+
     if (suggestion.companyName) {
       setCompanyName(suggestion.companyName);
     }
@@ -38,6 +42,7 @@ export default function GeneratorForm({ onGenerate, isGenerating }) {
       setUrl(suggestion.websiteUrl);
     }
 
+    setSuggestions([]);
     closeSuggestions();
   };
 
@@ -85,6 +90,13 @@ export default function GeneratorForm({ onGenerate, isGenerating }) {
 
   useEffect(() => {
     const query = companyName.trim();
+
+    if (suppressNextLookupRef.current) {
+      suppressNextLookupRef.current = false;
+      setIsFetchingSuggestions(false);
+      closeSuggestions();
+      return;
+    }
 
     if (isGenerating || query.length < COMPANY_QUERY_MIN_LENGTH) {
       suggestionRequestIdRef.current += 1;
